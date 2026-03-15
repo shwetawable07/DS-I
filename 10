@@ -1,0 +1,71 @@
+IMP Q3) Write a C program that accepts the vertices and edges of a graph and store it as an adjacency matrix- Implement 
+function to traverse the graph using Breadth First Search (BFS) OR (DFS) traversal.
+
+
+
+#include <stdio.h>
+
+int adj[20][20], visited[20], queue[20];
+int front = -1, rear = -1;
+
+void enqueue(int v) {
+    if(rear == 19)
+        return;
+    if(front == -1)
+        front = 0;
+    queue[++rear] = v;
+}
+
+int dequeue() {
+    if(front == -1 || front > rear)
+        return -1;
+    return queue[front++];
+}
+
+void bfs(int start, int n) {
+    int i, v;
+
+    enqueue(start);
+    visited[start] = 1;
+
+    while(front <= rear) {
+        v = dequeue();
+        printf("%d ", v);
+
+        for(i = 0; i < n; i++) {
+            if(adj[v][i] == 1 && visited[i] == 0) {
+                enqueue(i);
+                visited[i] = 1;
+            }
+        }
+    }
+}
+
+int main() {
+    int vertices, edges, i, j, v1, v2, start;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &vertices);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+
+    for(i = 0; i < vertices; i++)
+        for(j = 0; j < vertices; j++)
+            adj[i][j] = 0;
+
+    printf("Enter edges (v1 v2):\n");
+    for(i = 0; i < edges; i++) {
+        scanf("%d %d", &v1, &v2);
+        adj[v1][v2] = 1;
+        adj[v2][v1] = 1;
+    }
+
+    printf("Enter starting vertex for BFS: ");
+    scanf("%d", &start);
+
+    printf("BFS Traversal: ");
+    bfs(start, vertices);
+
+    return 0;
+}
