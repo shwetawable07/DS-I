@@ -1,0 +1,43 @@
+IMP Q1) Write a C program that accepts the vertices and edges Of a graph and stores it as an adjacency matrix. Display the 
+adjacency matrix.
+
+
+#include <stdio.h>
+
+int main() {
+    int adj[20][20];
+    int vertices, edges;
+    int i, j, v1, v2;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &vertices);
+
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+
+    // Initialize matrix with 0
+    for(i = 0; i < vertices; i++) {
+        for(j = 0; j < vertices; j++) {
+            adj[i][j] = 0;
+        }
+    }
+
+    // Accept edges
+    printf("Enter edges (vertex1 vertex2):\n");
+    for(i = 0; i < edges; i++) {
+        scanf("%d %d", &v1, &v2);
+        adj[v1][v2] = 1;
+        adj[v2][v1] = 1; // for undirected graph
+    }
+
+    // Display adjacency matrix
+    printf("\nAdjacency Matrix:\n");
+    for(i = 0; i < vertices; i++) {
+        for(j = 0; j < vertices; j++) {
+            printf("%d ", adj[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
