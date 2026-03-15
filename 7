@@ -1,0 +1,104 @@
+IMP Q4) Write a C program to maintain a phonebook using Binary Search Tree by name where each node contains contact 
+name and phone number.
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+struct node
+{
+    char name[50];
+    char phone[15];
+    struct node *left, *right;
+};
+
+struct node* createNode(char name[], char phone[])
+{
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    strcpy(newNode->name, name);
+    strcpy(newNode->phone, phone);
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+
+struct node* insert(struct node* root, char name[], char phone[])
+{
+    if (root == NULL)
+        return createNode(name, phone);
+
+    if (strcmp(name, root->name) < 0)
+        root->left = insert(root->left, name, phone);
+    else if (strcmp(name, root->name) > 0)
+        root->right = insert(root->right, name, phone);
+
+    return root;
+}
+
+struct node* search(struct node* root, char name[])
+{
+    if (root == NULL || strcmp(root->name, name) == 0)
+        return root;
+
+    if (strcmp(name, root->name) < 0)
+        return search(root->left, name);
+
+    return search(root->right, name);
+}
+
+void inorder(struct node* root)
+{
+    if (root != NULL)
+    {
+        inorder(root->left);
+        printf("Name: %s | Phone: %s\n", root->name, root->phone);
+        inorder(root->right);
+    }
+}
+
+int main()
+{
+    struct node* root = NULL;
+    int choice;
+    char name[50], phone[15];
+    struct node* result;
+
+    while (1)
+    {
+        printf("\nPhonebook Menu\n");
+        printf("1. Insert Contact\n");
+        printf("2. Search Contact\n");
+        printf("3. Display Contacts\n");
+        printf("4. Exit\n");
+        printf("Enter choice: ");
+        scanf("%d", &choice);
+
+        switch (choice)
+        {
+            case 1:
+                printf("Enter Name: ");
+                scanf("%s", name);
+                printf("Enter Phone: ");
+                scanf("%s", phone);
+                root = insert(root, name, phone);
+                break;
+
+            case 2:
+                printf("Enter Name to search: ");
+                scanf("%s", name);
+                result = search(root, name);
+                if (result)
+                    printf("Phone Number: %s\n", result->phone);
+                else
+                    printf("Contact not found\n");
+                break;
+
+            case 3:
+                printf("\nPhonebook Contacts:\n");
+                inorder(root);
+                break;
+
+            case 4:
+                exit(0);
+        }
+    }
+}
