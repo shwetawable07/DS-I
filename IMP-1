@@ -1,0 +1,152 @@
+Assignment No 1:
+
+Q1) Implement a Binary search tree (BST) library (btree-h) with operations — create, search, insert, inorder, preorder and 
+postorder, Write a menu driven program that performs the above operations.
+
+#include<stdio.h>
+#include<stdlib.h>
+
+struct node
+{
+    int data;
+    struct node *left;
+    struct node *right;
+};
+
+struct node *root = NULL;
+
+/* Create Node */
+struct node* createNode(int value)
+{
+    struct node *temp;
+    temp = (struct node*)malloc(sizeof(struct node));
+
+    temp->data = value;
+    temp->left = NULL;
+    temp->right = NULL;
+
+    return temp;
+}
+
+/* Insert Node */
+struct node* insert(struct node *root, int value)
+{
+    if(root == NULL)
+        return createNode(value);
+
+    if(value < root->data)
+        root->left = insert(root->left, value);
+
+    else if(value > root->data)
+        root->right = insert(root->right, value);
+
+    return root;
+}
+
+/* Search Node */
+struct node* search(struct node *root, int key)
+{
+    if(root == NULL || root->data == key)
+        return root;
+
+    if(key < root->data)
+        return search(root->left, key);
+
+    else
+        return search(root->right, key);
+}
+
+/* Inorder Traversal */
+void inorder(struct node *root)
+{
+    if(root != NULL)
+    {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+
+/* Preorder Traversal */
+void preorder(struct node *root)
+{
+    if(root != NULL)
+    {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+
+/* Postorder Traversal */
+void postorder(struct node *root)
+{
+    if(root != NULL)
+    {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root->data);
+    }
+}
+
+int main()
+{
+    int choice, value;
+    struct node *result;
+
+    while(1)
+    {
+        printf("\n----- Binary Search Tree -----\n");
+        printf("1. Insert\n");
+        printf("2. Search\n");
+        printf("3. Inorder Traversal\n");
+        printf("4. Preorder Traversal\n");
+        printf("5. Postorder Traversal\n");
+        printf("6. Exit\n");
+
+        printf("Enter your choice: ");
+        scanf("%d",&choice);
+
+        switch(choice)
+        {
+            case 1:
+                printf("Enter value: ");
+                scanf("%d",&value);
+                root = insert(root,value);
+                break;
+
+            case 2:
+                printf("Enter element to search: ");
+                scanf("%d",&value);
+
+                result = search(root,value);
+
+                if(result != NULL)
+                    printf("Element found\n");
+                else
+                    printf("Element not found\n");
+                break;
+
+            case 3:
+                printf("Inorder Traversal: ");
+                inorder(root);
+                break;
+
+            case 4:
+                printf("Preorder Traversal: ");
+                preorder(root);
+                break;
+
+            case 5:
+                printf("Postorder Traversal: ");
+                postorder(root);
+                break;
+
+            case 6:
+                exit(0);
+
+            default:
+                printf("Invalid choice\n");
+        }
+    }
+}
