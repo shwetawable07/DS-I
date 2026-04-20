@@ -1,0 +1,128 @@
+Q.1] Write a program to sort n randomly generated elements using Heapsort method.
+
+#include <stdio.h>
+void heapify(int arr[], int n, int i) {
+    int largest = i;        // Root
+    int left = 2 * i + 1;   // Left child
+    int right = 2 * i + 2;  // Right child
+    if (left < n && arr[left] > arr[largest])
+        largest = left;
+    if (right < n && arr[right] > arr[largest])
+        largest = right;
+    if (largest != i) {
+        int temp = arr[i];
+        arr[i] = arr[largest];
+        arr[largest] = temp;
+        heapify(arr, n, largest);
+    }
+}
+void heapSort(int arr[], int n) {
+    for (int i = n / 2 - 1; i >= 0; i--)
+        heapify(arr, n, i);
+    for (int i = n - 1; i > 0; i--) {
+        // Swap current root with end
+        int temp = arr[0];
+        arr[0] = arr[i];
+        arr[i] = temp;
+
+        // Heapify reduced heap
+        heapify(arr, i, 0);
+    }
+}
+void printArray(int arr[], int n) {
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
+}
+int main() {
+    int n;
+    printf("Enter number of elements: ");
+    scanf("%d", &n);
+    int arr[n];
+    printf("Enter elements:\n");
+    for (int i = 0; i < n; i++)
+        scanf("%d", &arr[i]);
+    printf("Original array:\n");
+    printArray(arr, n);
+    heapSort(arr, n);
+    printf("\nSorted array:\n");
+    printArray(arr, n);
+    return 0;
+}
+
+
+
+
+
+DBMS:
+
+
+CREATE TABLE Student(
+ rollno INTEGER PRIMARY KEY,
+ name VARCHAR(30),
+ address VARCHAR(50),
+ class VARCHAR(10)
+);
+CREATE TABLE Subject(
+ scode VARCHAR(10) PRIMARY KEY,
+ subject_name VARCHAR(20)
+);
+CREATE TABLE Student_Subject(
+ rollno INTEGER,
+ scode VARCHAR(10),
+ marks_scored INTEGER,
+ PRIMARY KEY(rollno, scode),
+ FOREIGN KEY(rollno) REFERENCES Student(rollno),
+ FOREIGN KEY(scode) REFERENCES Subject(scode)
+);
+INSERT INTO Student VALUES
+(1, 'Amit', 'Pune', 'SY'),
+(2, 'Rahul', 'Mumbai', 'SY');
+INSERT INTO Subject VALUES
+('S1', 'Math'),
+('S2', 'DBMS');
+INSERT INTO Student_Subject VALUES
+(1, 'S1', 80),
+(1, 'S2', 70),
+(2, 'S1', 60),
+(2, 'S2', 75);
+
+
+1) Write a stored function using cursors, to calculate total
+marks of each student and display it.
+CREATE OR REPLACE FUNCTION total_marks()
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ r RECORD;
+ total INTEGER;
+ cur CURSOR FOR SELECT rollno FROM Student;
+BEGIN
+ OPEN cur;
+ LOOP
+ FETCH cur INTO r;
+ EXIT WHEN NOT FOUND;
+ SELECT SUM(marks_scored) INTO total
+ FROM Student_Subject
+ WHERE rollno = r.rollno;
+ RAISE NOTICE 'Roll No = %, Total Marks = %', r.rollno, total;
+ END LOOP;
+ CLOSE cur;
+END;
+$$;
+
+
+2 ) Check the number is positive, negative or zero.
+CREATE OR REPLACE PROCEDURE check_num(n INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+ IF n > 0 THEN
+ RAISE NOTICE 'Number is Positive';
+ ELSIF n < 0 THEN
+ RAISE NOTICE 'Number is Negative';
+ ELSE
+ RAISE NOTICE 'Number is Zero';
+ END IF;
+END;
+$$;
