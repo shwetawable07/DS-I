@@ -1,0 +1,144 @@
+Q1) Write a C program to find the minimum and maximum values in a Binary Search Tree.
+
+#include <stdio.h>
+#include <stdlib.h>
+struct node {
+    int data;
+    struct node *left, *right;
+};
+struct node* createNode(int data) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+struct node* insert(struct node* root, int data) {
+    if (root == NULL)
+        return createNode(data);
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else
+        root->right = insert(root->right, data);
+    return root;
+}
+int findMin(struct node* root) {
+    if (root == NULL) {
+        printf("Tree is empty\n");
+        return -1;
+    }
+    while (root->left != NULL)
+        root = root->left;
+    return root->data;
+}
+int findMax(struct node* root) {
+    if (root == NULL) {
+        printf("Tree is empty\n");
+        return -1;
+    }
+    while (root->right != NULL)
+        root = root->right;
+    return root->data;
+}
+int main() {
+    struct node* root = NULL;
+    int n, value;
+    printf("Enter number of nodes: ");
+    scanf("%d", &n);
+    printf("Enter values:\n");
+    for (int i = 0; i < n; i++) {
+        scanf("%d", &value);
+        root = insert(root, value);
+    }
+    printf("Minimum value in BST: %d\n", findMin(root));
+    printf("Maximum value in BST: %d\n", findMax(root));
+    return 0;
+}
+
+
+
+DBMS:
+
+RDBMS
+CREATE TABLE STUDENT (
+ sreg_no INT PRIMARY KEY,
+ name CHAR(30),
+ class CHAR(10)
+);
+CREATE TABLE COMPETITION (
+ c_no INT PRIMARY KEY,
+ name CHAR(20),
+ c_type CHAR(15)
+);
+CREATE TABLE STUDENT_COMPETITION (
+ sreg_no INT,
+ c_no INT,
+ rank INT,
+ year INT,
+ prize INT,
+ PRIMARY KEY (sreg_no, c_no),
+ FOREIGN KEY (sreg_no) REFERENCES STUDENT(sreg_no),
+ FOREIGN KEY (c_no) REFERENCES COMPETITION(c_no)
+);
+INSERT INTO STUDENT VALUES
+(1, 'Amit', 'SY'),
+(2, 'Rahul', 'SY');
+INSERT INTO COMPETITION VALUES
+(101, 'Quiz', 'Academic'),
+(102, 'Coding', 'Technical');
+INSERT INTO STUDENT_COMPETITION VALUES
+(1, 101, 1, 2020, 500),
+(1, 102, 2, 2020, 300),
+(2, 101, 3, 2020, 200);
+
+
+1) Write a function using cursor which accepts a name of student
+and returns the total no of prizes won by that student in the year
+2020. 
+CREATE OR REPLACE FUNCTION total_prizes(sname TEXT)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ r RECORD;
+ total INTEGER := 0;
+ cur CURSOR FOR
+ SELECT prize
+ FROM STUDENT S, STUDENT_COMPETITION SC
+ WHERE S.sreg_no = SC.sreg_no
+ AND S.name = sname
+ AND SC.year = 2020;
+BEGIN
+ OPEN cur;
+ LOOP
+ FETCH cur INTO r;
+ EXIT WHEN NOT FOUND;
+ total := total + r.prize;
+ END LOOP;
+ CLOSE cur;
+ RETURN total;
+END;
+$$;
+
+
+2) Write a procedure to find sum of first 50 numbers (using
+unconditional loop).
+CREATE OR REPLACE PROCEDURE sum_50()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ i INTEGER := 1;
+ s INTEGER := 0;
+BEGIN
+ LOOP
+ s := s + i;
+ i := i + 1;
+ EXIT WHEN i > 50;
+ END LOOP;
+ RAISE NOTICE 'Sum of first 50 numbers = %', s;
+END;
+$$;
+
+
+
+
+
