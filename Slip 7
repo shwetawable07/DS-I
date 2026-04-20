@@ -1,0 +1,165 @@
+Q1) Write a C program which uses Binary search tree library and display the following Node
+value at each level Count of node at each level Total levels in the tree.
+#include <stdio.h>
+#include <stdlib.h>
+struct node
+{
+int data;
+struct node *left;
+struct node *right;
+};
+struct node* create(int value)
+{
+struct node *temp = (struct node*)malloc(sizeof(struct node));
+temp->data = value;
+temp->left = NULL;
+temp->right = NULL;
+return temp;
+}
+struct node* insert(struct node *root, int value)
+{
+if(root == NULL)
+return create(value);
+if(value < root->data)
+root->left = insert(root->left, value);
+else if(value > root->data)
+root->right = insert(root->right, value);
+return root;
+}
+int height(struct node *root)
+{
+if(root == NULL)
+return -1;
+int l = height(root->left);
+int r = height(root->right);
+return (l > r ? l : r) + 1;
+}
+void printLevel(struct node *root, int level)
+{
+if(root == NULL)
+return;
+if(level == 0)
+printf("%d ", root->data);
+else
+{
+printLevel(root->left, level - 1);
+printLevel(root->right, level - 1);
+}
+}
+int countLevel(struct node *root, int level)
+{
+if(root == NULL)
+return 0;
+if(level == 0)
+return 1;
+return countLevel(root->left, level - 1) + countLevel(root->right, level - 1);
+}
+int main()
+{
+struct node *root = NULL;
+int n, value, i, h, lvl;
+printf("Enter number of nodes: ");
+scanf("%d", &n);
+for(i = 0; i < n; i++)
+{
+printf("Enter value: ");
+scanf("%d", &value);
+root = insert(root, value);
+}
+h = height(root);
+printf("\nTotal levels in tree = %d\n\n", h + 1);
+for(lvl = 0; lvl <= h; lvl++)
+{
+printf("Level %d: ", lvl);
+printLevel(root, lvl);
+int count = countLevel(root, lvl);
+printf(" Count = %d\n", count);
+}
+return 0;
+}
+
+
+
+
+DBMS:
+
+
+CREATE TABLE Student
+(
+sreg_no INT PRIMARY KEY,
+s_name VARCHAR(20),
+s_class CHAR(10)
+);
+CREATE TABLE Competition
+(
+c_no INT PRIMARY KEY,
+c_name VARCHAR(20),
+c_type CHAR(10) NOT NULL CHECK (c_type IN
+('sport','academic'))
+);
+CREATE TABLE Student_Competition
+(
+sreg_no INT,
+c_no INT,
+rank INT,
+year INT,
+PRIMARY KEY(sreg_no,c_no),
+FOREIGN KEY(sreg_no) REFERENCES Student(sreg_no),
+FOREIGN KEY(c_no) REFERENCES Competition(c_no)
+);
+INSERT INTO Student VALUES(1,'Amit','SYBCS');
+INSERT INTO Student VALUES(2,'Rahul','SYBCS');
+INSERT INTO Student VALUES(3,'Sagar','TYBCS');
+INSERT INTO Competition VALUES(101,'Cricket','sport');
+INSERT INTO Competition VALUES(102,'Quiz','academic');
+INSERT INTO Student_Competition VALUES(1,101,1,2024);
+INSERT INTO Student_Competition VALUES(2,102,2,2024);
+INSERT INTO Student_Competition VALUES(3,101,3,2023);
+
+
+1. write a function using cursor to accept year and class to
+display student name, competition name and rank.
+CREATE OR REPLACE PROCEDURE student_comp(y INT, cls
+VARCHAR)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+rec RECORD;
+cur CURSOR FOR
+SELECT s.s_name, c.c_name, sc.rank
+FROM Student s, Competition c, Student_Competition sc
+WHERE s.sreg_no = sc.sreg_no
+AND c.c_no = sc.c_no
+AND sc.year = y
+AND s.s_class = cls;
+BEGIN
+OPEN cur;
+LOOP
+FETCH cur INTO rec;
+EXIT WHEN NOT FOUND;
+RAISE NOTICE 'Student = %, Competition = %, Rank = %',
+rec.s_name, rec.c_name, rec.rank;
+END LOOP;
+CLOSE cur;
+END;
+$$;
+CALL student_comp(2024,'SYBCS');
+
+
+2. Write a procedure to find maximum and minimum from three
+numbers
+CREATE OR REPLACE PROCEDURE max_min(a INT, b INT, c INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+mx INT;
+mn INT;
+BEGIN
+mx := GREATEST(a,b,c);
+mn := LEAST(a,b,c);
+RAISE NOTICE 'Maximum = %', mx;
+RAISE N
+OTICE 'Minimum = %', mn;
+END;
+$$;
+CALL max_min(10,5,20);
