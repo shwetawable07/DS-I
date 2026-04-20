@@ -160,18 +160,7 @@ END;
 $$;
 SELECT get_driver_name(101);
 2. Write a procedure to find number is even or odd.
-CREATE OR REPLACE PROCEDURE check_even_odd(n INT)
-LANGUAGE plpgsql
-AS
-$$
-BEGIN
-IF n%2=0 THEN
-RAISE NOTICE 'Number is Even';
-ELSE
-RAISE NOTICE 'Number is Odd';
-END IF;
-END;
-$$;
+
 CREATE OR REPLACE PROCEDURE check_even_odd(n INT)
 LANGUAGE plpgsql
 AS
