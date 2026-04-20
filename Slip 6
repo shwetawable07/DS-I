@@ -1,0 +1,131 @@
+Q1) Write a C program to find the minimum and maximum values in a Binary Search Tree
+#include <stdio.h>
+#include <stdlib.h>
+struct node
+{
+int data;
+struct node *left;
+struct node *right;
+};
+struct node* create(int value)
+{
+struct node *temp = (struct node*)malloc(sizeof(struct node));
+temp->data = value;
+temp->left = NULL;
+temp->right = NULL;
+return temp;
+}
+struct node* insert(struct node *root, int value)
+{
+if(root == NULL)
+return create(value);
+if(value < root->data)
+root->left = insert(root->left, value);
+else if(value > root->data)
+root->right = insert(root->right, value);
+return root;
+}
+int findMin(struct node *root)
+{
+if(root == NULL)
+{
+printf("Tree is empty\n");
+return -1;
+}
+while(root->left != NULL)
+root = root->left;
+return root->data;
+}
+int findMax(struct node *root)
+{
+if(root == NULL)
+{
+printf("Tree is empty\n");
+return -1;
+}
+while(root->right != NULL)
+root = root->right;
+return root->data;
+}
+int main()
+{
+struct node *root = NULL;
+int n, value, i;
+printf("Enter number of nodes: ");
+scanf("%d", &n);
+for(i = 0; i < n; i++)
+{
+printf("Enter value: ");
+scanf("%d", &value);
+root = insert(root, value);
+}
+printf("Minimum value in BST = %d\n", findMin(root));
+printf("Maximum value in BST = %d\n", findMax(root));
+return 0;
+}
+
+
+
+
+DBMS:
+
+
+CREATE TABLE Area
+(
+aname VARCHAR(20) PRIMARY KEY,
+area_type VARCHAR(5) CHECK (area_type IN ('urban','rural'))
+);
+CREATE TABLE Person
+(
+pno INT PRIMARY KEY,
+pname VARCHAR(20),
+birthdate DATE,
+income MONEY,
+aname VARCHAR(20),
+FOREIGN KEY(aname) REFERENCES Area(aname)
+);
+INSERT INTO Area VALUES('Nashik','urban');
+INSERT INTO Area VALUES('Satpur','urban');
+INSERT INTO Area VALUES('Trimbak','rural');
+INSERT INTO Person VALUES(1,'Amit','2000-05-
+10',20000,'Nashik');
+INSERT INTO Person VALUES(2,'Rahul','1999-08-
+15',15000,'Satpur');
+INSERT INTO Person VALUES(3,'Sagar','2001-02-
+20',18000,'Nashik');
+INSERT INTO Person VALUES(4,'Ravi','1998-12-
+12',12000,'Trimbak');
+
+
+1) Write a stored function to print total number of persons of a
+particular area. Accept area name as input parameter.
+CREATE OR REPLACE FUNCTION total_persons(area_name
+VARCHAR)
+RETURNS INT
+LANGUAGE plpgsql
+AS $$
+DECLARE
+total INT;
+BEGIN
+SELECT COUNT(*) INTO total
+FROM Person
+WHERE aname = area_name;
+RETURN total;
+END;
+$$;
+SELECT total_persons('Nashik');
+
+
+2) Write a procedure to display division of two numbers. Use
+raise to display error messages for division by zero error.
+CREATE OR REPLACE PROCEDURE divide_no(a INT, b INT)
+LANGUAGE plpgsql
+AS $$
+BEGIN
+IF b = 0 THEN
+RAISE EXCEPTION 'Division by zero not allowed';
+END IF;
+RAISE NOTICE 'Division = %', a / b;
+END;
+$$;
+CALL divide_no(10,2);
