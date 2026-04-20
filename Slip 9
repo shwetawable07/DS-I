@@ -1,0 +1,125 @@
+Q1) Write a C program that accepts the vertices and edges of a graph and store it as an adjacency list. Implement function to traverse the graph using Depth 
+First Search (DFS) traversal.
+
+#include <stdio.h>
+#include <stdlib.h>
+struct Node {
+    int vertex;
+    struct Node* next;
+};
+struct Graph {
+    int numVertices;
+    struct Node** adjLists;
+    int* visited;
+};
+struct Node* createNode(int v) {
+    struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+    newNode->vertex = v;
+    newNode->next = NULL;
+    return newNode;
+}
+struct Graph* createGraph(int vertices) {
+    struct Graph* graph = (struct Graph*)malloc(sizeof(struct Graph));
+    graph->numVertices = vertices;
+    graph->adjLists = (struct Node**)malloc(vertices * sizeof(struct Node*));
+    graph->visited = (int*)malloc(vertices * sizeof(int));
+    for (int i = 0; i < vertices; i++) {
+        graph->adjLists[i] = NULL;
+        graph->visited[i] = 0;
+    }
+
+    return graph;
+}
+void addEdge(struct Graph* graph, int src, int dest)
+{
+struct Node* newNode = createNode(dest);
+    newNode->next = graph->adjLists[src];
+    graph->adjLists[src] = newNode;
+    newNode = createNode(src);
+    newNode->next = graph->adjLists[dest];
+    graph->adjLists[dest] = newNode;
+}
+void DFS(struct Graph* graph, int vertex) {
+    struct Node* adjList = graph->adjLists[vertex];
+    struct Node* temp = adjList;
+    graph->visited[vertex] = 1;
+    printf("%d ", vertex);
+    while (temp != NULL) {
+        int connectedVertex = temp->vertex;
+        if (graph->visited[connectedVertex] == 0) {
+            DFS(graph, connectedVertex);
+        }
+        temp = temp->next;
+    }
+}
+int main() {
+    int vertices, edges, src, dest, start;
+    printf("Enter number of vertices: ");
+    scanf("%d", &vertices);
+    struct Graph* graph = createGraph(vertices);
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+    printf("Enter edges (src dest):\n");
+    for (int i = 0; i < edges; i++) {
+        scanf("%d %d", &src, &dest);
+        addEdge(graph, src, dest);
+    }
+    printf("Enter starting vertex for DFS: ");
+    scanf("%d", &start);
+    printf("DFS Traversal: ");
+    DFS(graph, start);
+    return 0;
+}
+
+DBMS:
+
+CREATE TABLE Department (
+ dno INTEGER PRIMARY KEY,
+ dname VARCHAR(20),
+ city VARCHAR(20)
+);
+CREATE TABLE Employee (
+ eno INTEGER PRIMARY KEY,
+ ename VARCHAR(20),
+ salary MONEY,
+ dno INTEGER,
+ FOREIGN KEY (dno) REFERENCES Department(dno)
+);
+INSERT INTO Department VALUES
+(1, 'HR', 'Pune'),
+(2, 'IT', 'Mumbai');
+INSERT INTO Employee VALUES
+(101, 'Amit', 30000, 1),
+(102, 'Rahul', 50000, 2),
+(103, 'Suresh', 45000, 2);
+
+
+1) Write a function to accept department name and display the
+maximum salary of an employee in that department.
+CREATE OR REPLACE FUNCTION max_salary(dept_name TEXT)
+RETURNS MONEY
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ max_sal MONEY;
+BEGIN
+ SELECT MAX(E.salary) INTO max_sal
+ FROM Employee E, Department D
+ WHERE E.dno = D.dno
+ AND D.dname = dept_name;
+ RETURN max_sal;
+END;
+$$;
+
+
+2) Write a procedure to display multiplication of two numbers.
+CREATE OR REPLACE PROCEDURE multiply(a INT, b INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ result INT;
+BEGIN
+ result := a * b;
+ RAISE NOTICE 'Multiplication = %', result;
+END; 
+$$; 
