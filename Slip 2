@@ -1,0 +1,241 @@
+Q1) Write a C program which uses Binary search tree library and implements following
+function with recursion: int copy(T) – create another BST which is exact copy of BST which is
+passed as parameter. int compare(T1, T2) – compares two binary search trees and returns 1
+if they are equal and 0 otherwise.
+#include <stdio.h>
+#include <stdlib.h>
+struct node
+{
+int data;
+struct node *left;
+struct node *right;
+};
+struct node* create(int value)
+{
+struct node *temp = (struct node*)malloc(sizeof(struct node));
+temp->data = value;
+temp->left = NULL;
+temp->right = NULL;
+return temp;
+}
+struct node* insert(struct node *root, int value)
+{
+if(root == NULL)
+return create(value);
+if(value < root->data)
+root->left = insert(root->left, value);
+else if(value > root->data)
+root->right = insert(root->right, value);
+return root;
+}
+struct node* copy(struct node *root)
+{
+if(root == NULL)
+return NULL;
+struct node *newNode = create(root->data);
+newNode->left = copy(root->left);
+newNode->right = copy(root->right);
+return newNode;
+}
+int compare(struct node *t1, struct node *t2)
+{
+if(t1 == NULL && t2 == NULL)
+return 1;
+if(t1 == NULL || t2 == NULL)
+return 0;
+if(t1->data != t2->data)
+return 0;
+return compare(t1->left, t2->left) && compare(t1->right, t2->right);
+}
+void inorder(struct node *root)
+{
+if(root != NULL)
+{
+inorder(root->left);
+printf("%d ", root->data);
+inorder(root->right);
+}
+}
+int main()
+{
+struct node *root1 = NULL, *root2 = NULL;
+int n, value, i;
+printf("Enter number of nodes: ");
+scanf("%d", &n);
+for(i = 0; i < n; i++)
+{
+printf("Enter value: ");
+scanf("%d", &value);
+root1 = insert(root1, value);
+}
+root2 = copy(root1);
+printf("\nOriginal BST (Inorder): ");
+inorder(root1);
+printf("\nCopied BST (Inorder): ");
+inorder(root2);
+if(compare(root1, root2))
+printf("\n\nTrees are equal\n");
+else
+printf("\n\nTrees are NOT equal\n");
+return 0;
+}
+
+
+DBMS:
+
+CREATE TABLE BUS(
+bus_no INT PRIMARY KEY,
+capacity INT NOT NULL,
+depot_name VARCHAR(20)
+);
+CREATE TABLE ROUTE(
+route_no INT PRIMARY KEY,
+source CHAR(20),
+destination CHAR(20),
+no_of_stations INT
+);
+CREATE TABLE DRIVER(
+driver_no INT PRIMARY KEY,
+driver_name CHAR(20),
+license_no INT UNIQUE,
+address CHAR(20),
+d_age INT,
+salary FLOAT
+);
+CREATE TABLE BUS_ROUTE(
+bus_no INT,
+route_no INT,
+PRIMARY KEY(bus_no,route_no),
+FOREIGN KEY(bus_no) REFERENCES BUS(bus_no),
+FOREIGN KEY(route_no) REFERENCES ROUTE(route_no)
+);
+CREATE TABLE BUS_DRIVER(
+bus_no INT,
+driver_no INT,
+date_of_duty DATE,
+shift INT,
+PRIMARY KEY(bus_no,driver_no),
+FOREIGN KEY(bus_no) REFERENCES BUS(bus_no),
+FOREIGN KEY(driver_no) REFERENCES DRIVER(driver_no)
+);
+INSERT INTO BUS VALUES
+(101,50,'Nashik'),
+(102,45,'Pune'),
+(103,60,'Mumbai');
+INSERT INTO ROUTE VALUES
+(1,'Nashik','Pune',8),
+(2,'Pune','Mumbai',10),
+(3,'Nashik','Mumbai',12);
+INSERT INTO DRIVER VALUES
+(1,'Ramesh',1111,'Nashik',55,25000),
+(2,'Suresh',2222,'Pune',45,22000),
+(3,'Mahesh',3333,'Mumbai',52,26000);
+INSERT INTO BUS_ROUTE VALUES
+(101,1),
+(102,2),
+(103,3);
+INSERT INTO BUS_DRIVER VALUES
+(101,1,'2026-03-10',1),
+(102,2,'2026-03-11',2),
+(103,3,'2026-03-12',1);
+
+
+1. Write a stored function to accept the bus number and print
+driver name allotted to that bus.
+CREATE OR REPLACE FUNCTION get_driver_name(bno INT)
+RETURNS TEXT
+LANGUAGE plpgsql
+AS
+$$
+DECLARE
+dname TEXT;
+BEGIN
+SELECT driver_name INTO dname
+FROM DRIVER d
+JOIN BUS_DRIVER bd
+ON d.driver_no=bd.driver_no
+WHERE bd.bus_no=bno;
+RETURN dname;
+END;
+$$;
+SELECT get_driver_name(101);
+2. Write a procedure to find number is even or odd.
+CREATE OR REPLACE PROCEDURE check_even_odd(n INT)
+LANGUAGE plpgsql
+AS
+$$
+BEGIN
+IF n%2=0 THEN
+RAISE NOTICE 'Number is Even';
+ELSE
+RAISE NOTICE 'Number is Odd';
+END IF;
+END;
+$$;
+CREATE OR REPLACE PROCEDURE check_even_odd(n INT)
+LANGUAGE plpgsql
+AS
+$$
+BEGIN
+IF n%2=0 THEN
+RAISE NOTICE 'Number is Even';
+ELSE
+RAISE NOTICE 'Number is Odd';
+END IF;
+END;
+$$;
+CALL check_even_odd(9);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
