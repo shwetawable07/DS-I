@@ -1,0 +1,196 @@
+Q1) Implement a Binary search tree (BST) library (btree.h) with operations – create, search, insert, inorder, preorder and postorder. 
+Write a menu driven program that performs the above operations. 
+
+#include <stdio.h>
+#include <stdlib.h>
+struct node {
+    int data;
+    struct node *left, *right;
+};
+struct node* create(int data) {
+    struct node* newNode = (struct node*)malloc(sizeof(struct node));
+    newNode->data = data;
+    newNode->left = newNode->right = NULL;
+    return newNode;
+}
+struct node* insert(struct node* root, int data) {
+    if (root == NULL)
+        return create(data);
+
+    if (data < root->data)
+        root->left = insert(root->left, data);
+    else if (data > root->data)
+        root->right = insert(root->right, data);
+
+    return root;
+}
+struct node* search(struct node* root, int key) {
+    if (root == NULL || root->data == key)
+        return root;
+
+    if (key < root->data)
+        return search(root->left, key);
+
+    return search(root->right, key);
+}
+void inorder(struct node* root) {
+    if (root != NULL) {
+        inorder(root->left);
+        printf("%d ", root->data);
+        inorder(root->right);
+    }
+}
+void preorder(struct node* root) {
+    if (root != NULL) {
+        printf("%d ", root->data);
+        preorder(root->left);
+        preorder(root->right);
+    }
+}
+void postorder(struct node* root) {
+    if (root != NULL) {
+        postorder(root->left);
+        postorder(root->right);
+        printf("%d ", root->data);
+    }
+}
+int main() {
+    struct node* root = NULL;
+    int choice, value;
+    struct node* result;
+
+    do {
+        printf("\n--- BST MENU ---\n");
+        printf("1. Insert\n");
+        printf("2. Search\n");
+        printf("3. Inorder Traversal\n");
+        printf("4. Preorder Traversal\n");
+        printf("5. Postorder Traversal\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch(choice) {
+            case 1:
+                printf("Enter value to insert: ");
+                scanf("%d", &value);
+                root = insert(root, value);
+                break;
+
+            case 2:
+                printf("Enter value to search: ");
+                scanf("%d", &value);
+                result = search(root, value);
+                if (result != NULL)
+                    printf("Element found\n");
+                else
+                    printf("Element not found\n");
+                break;
+
+            case 3:
+                printf("Inorder: ");
+                inorder(root);
+                printf("\n");
+                break;
+
+            case 4:
+                printf("Preorder: ");
+                preorder(root);
+                printf("\n");
+                break;
+
+            case 5:
+                printf("Postorder: ");
+                postorder(root);
+                printf("\n");
+                break;
+
+            case 6:
+                printf("Exiting...\n");
+                break;
+
+            default:
+                printf("Invalid choice\n");
+        }
+
+    } while(choice != 6);
+
+    return 0;
+}
+
+
+DBMS:
+
+
+CREATE TABLE Customer (
+ cno INT PRIMARY KEY,
+ cname VARCHAR(20),
+ city VARCHAR(20)
+);
+
+CREATE TABLE Account (
+ a_no INT PRIMARY KEY,
+ a_type VARCHAR(10)
+ opening_date DATE,
+ balance MONEY,
+ cno INT REFERENCES Customer(cno)
+);
+
+INSERT INTO Customer VALUES
+(1, 'Amit', 'Pune'),
+(2, 'Ravi', 'Mumbai'),
+(3, 'Sneha', 'Pune');
+
+INSERT INTO Account VALUES
+(101, 'Saving', '2023-01-01', 5000, 1),
+(102, 'Current', '2023-02-01', 8000, 2),
+(103, 'Saving', '2023-03-01', 6000, 3);
+
+1) Write a function using cursor which accepts city name as
+input and prints the details of all customers in that city.
+
+CREATE OR REPLACE FUNCTION cust_by_city(ct VARCHAR)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ cno_var INT;
+ cname_var VARCHAR(20);
+ city_var VARCHAR(20);
+
+ cur CURSOR FOR
+ SELECT cno, cname, city 
+ FROM Customer
+ WHERE city = ct;
+BEGIN
+ OPEN cur;
+
+ LOOP
+ FETCH cur INTO cno_var, cname_var, city_var;
+ EXIT WHEN NOT FOUND;
+
+ RAISE NOTICE 'Cno: %, Name: %, City: %',
+ cno_var, cname_var, city_var;
+ END LOOP;
+
+ CLOSE cur;
+END;
+$$;
+
+2) Write a procedure to display all customers from ‘Pune’ city.
+CREATE OR REPLACE PROCEDURE pune_customers()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ rec RECORD;
+BEGIN
+ FOR rec IN SELECT * FROM Customer WHERE city = 'Pune'
+ LOOP
+ RAISE NOTICE 'Cno: %Name: %, City: %',
+ rec.cno, rec.cname, rec.city;
+ END LOOP;
+END;
+$$;
+
+
+ 
