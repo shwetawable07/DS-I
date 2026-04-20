@@ -1,0 +1,129 @@
+1) Write a C program that accepts the vertices and edges of a graph and store it as an adjacency matrix. 
+Implement function to traverse the graph using depth first search DFS 
+
+
+#include <stdio.h>
+#define MAX 100
+int adj[MAX][MAX];   
+int visited[MAX];     
+int n;               
+
+void DFS(int v) {
+    visited[v] = 1;
+    printf("%d ", v);
+
+    for (int i = 0; i < n; i++) {
+        if (adj[v][i] == 1 && visited[i] == 0) {
+            DFS(i);
+        }
+    }
+}
+
+int main() {
+    int edges, u, v, start;
+
+    printf("Enter number of vertices: ");
+    scanf("%d", &n);
+    for (int i = 0; i < n; i++) {
+        visited[i] = 0;
+        for (int j = 0; j < n; j++) {
+            adj[i][j] = 0;
+        }
+    }
+
+    printf("Enter number of edges: ");
+    scanf("%d", &edges);
+    printf("Enter edges (u v):\n");
+    for (int i = 0; i < edges; i++) {
+        scanf("%d %d", &u, &v);
+        adj[u][v] = 1;
+        adj[v][u] = 1;   
+        }
+
+    printf("Enter starting vertex: ");
+    scanf("%d", &start);
+
+    printf("DFS Traversal: ");
+    DFS(start);
+
+    return 0;
+}
+
+DBMS:
+
+
+-- Table Creation
+CREATE TABLE Student (
+rollno INT,
+name VARCHAR(30),
+class VARCHAR(10)
+); 
+CREATE TABLE Subject (
+scode VARCHAR(10),
+subject_name VARCHAR(20)
+);
+
+CREATE TABLE Student_Subject (
+rollno INT,
+scode VARCHAR(10),
+marks_scored INT
+);
+
+-- Insert Values
+INSERT INTO Student VALUES (1, 'Amit', 'FY');
+INSERT INTO Student VALUES (2, 'Rahul', 'SY');
+INSERT INTO Student VALUES (3, 'Sneha', 'FY');
+
+INSERT INTO Subject VALUES ('S1', 'Maths');
+INSERT INTO Subject VALUES ('S2', 'DBMS');
+
+INSERT INTO Student_Subject VALUES (1, 'S1', 80);
+INSERT INTO Student_Subject VALUES (2, 'S2', 75);
+INSERT INTO Student_Subject VALUES (3, 'S1', 90);
+
+
+1. Write a stored function using cursors, to accept class from
+the user and display the details of the students of that class.
+-- Function
+CREATE OR REPLACE FUNCTION student_by_class(cl VARCHAR)
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+DECLARE
+r INT;
+n VARCHAR(30);
+c VARCHAR(10);
+
+cur CURSOR FOR
+SELECT rollno, name, class
+FROM Student
+WHERE class = cl;
+
+BEGIN
+OPEN cur;
+
+LOOP
+FETCH cur INTO r, n, c;
+EXIT WHEN NOT FOUND;
+
+RAISE NOTICE 'Roll: %, Name: %, Class: %', r, n, c;
+END LOOP;
+
+CLOSE cur;
+END;
+$$;
+
+2. Write a procedure to display all even numbers from 1 to 50.
+CREATE OR REPLACE PROCEDURE even_numbers()
+LANGUAGE plpgsql
+AS $$
+DECLARE
+ i INT;
+BEGIN
+ FOR i IN 1..50 LOOP
+ IF i % 2 = 0 THEN
+ RAISE NOTICE '%', i;
+ END IF;
+ END LOOP;
+END;
+$$; 
